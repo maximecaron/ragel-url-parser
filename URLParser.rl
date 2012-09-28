@@ -1,4 +1,3 @@
-package com.ms.bi.magma.server.parser;
 import java.util.Arrays;
 
 /**
