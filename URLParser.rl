@@ -78,9 +78,7 @@ public class URLParser {
     slash = "/" | "\\";
     path = (slash ( (pchar - ("?" | "#")) + ( slash (pchar - ("?" | "#"))* )* )? ) >mark %save_path;
     drivepath = ( (slash|(alpha ":" slash)) ( (pchar - ("?" | "#")) + ( slash (pchar - ("?" | "#"))* )* )? ) >mark %save_path;
-    scheme      = (alpha ( alpha | digit | "+" | "-" )*) | "z39.50r"
-                | "z39.50r" | "xmlrpc.beep" | "soap.beeps" | "soap.beep"
-                | "iris.beep" | "iris.xpc" | "iris.xpcs" | "iris.lws";
+    scheme      = (alpha ( alpha | digit | "+" | "-" | "." )*);
 
 #simple ipv4 address
     dec_octet = digit{1,3};
