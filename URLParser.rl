@@ -9,6 +9,7 @@ import java.util.Arrays;
  *  ragel -J URLParser.rl
  *
  * @author maxime caron
+ * @see https://github.com/maximecaron/ragel-url-parser
  */
 public class URLParser {
 /* If you dont need a robust implementation this regexp might be enough
@@ -25,122 +26,139 @@ public class URLParser {
       fragment  = $16
 */
 %%{
-    machine url_parser;
+  machine url_parser;
 
-    action mark { mark = fpc; }
-    action mark_port { port_mark = fpc; }
+  action mark { mark = fpc; }
+  action mark_port { port_mark = fpc; }
 
   action save_port {
-      if (port_mark > host_mark){
-        u.port = new String(Arrays.copyOfRange(data, port_mark,fpc ));
-      }
+    if (port_mark > host_mark){
+      u.port = new String(Arrays.copyOfRange(data, port_mark,fpc ));
     }
-    action save_scheme {
-      u.protocol = new String(Arrays.copyOfRange(data, 0,fpc-1));
-    }
+  }
+
+  action save_scheme {
+    u.protocol = new String(Arrays.copyOfRange(data, 0,fpc-1));
+  }
+
   action mark_host {
-     host_mark = fpc;
-    }
+    host_mark = fpc;
+  }
+
   action save_host {
     u.host = new String(Arrays.copyOfRange(data, host_mark, fpc));
-    }
+  }
+
   action save_query {
     if ( u.query == null) {
       u.query = new String(Arrays.copyOfRange(data, mark,fpc));
     }
-    }
+  }
+
   action save_path {
-   if (u.path == null){
+    if (u.path == null){
       u.path = new String(Arrays.copyOfRange(data, mark,fpc));
-   }
     }
+  }
 
   action save_fragment {
     u.fragment = new String(Arrays.copyOfRange(data, mark,fpc));
-    }
+  }
 
+  pct_encoded = "%" xdigit xdigit;
 
+  gen_delims  = ":" | "/" | "?" | "#" | "[" | "]" | "@";
+  sub_delims  = "!" | "$" | "&" | "'" | "(" | ")" | "*" | "+" | "," | ";" | "=";
 
-    pct_encoded = "%" xdigit xdigit;
+  reserved    = gen_delims | sub_delims;
+  unreserved  = alpha | digit | "-" | "." | "_" | "~";
 
-    gen_delims  = ":" | "/" | "?" | "#" | "[" | "]" | "@";
-    sub_delims  = "!" | "$" | "&" | "'" | "(" | ")"
-                  | "*" | "+" | "," | ";" | "=";
+  # many clients don't encode these, e.g. curl, wget, ...
+  delims      = "<" | ">" | "%" |  "#" | '"';
+  unwise      = " " | "{" | "}" | "|" | "\\" | "^" | "[" | "]" | "`";
 
-    reserved    = gen_delims | sub_delims;
-    unreserved  = alpha | digit | "-" | "." | "_" | "~";
+  pchar = unreserved | pct_encoded | sub_delims | ":" | "@" | delims | unwise;
+  slash = "/" | "\\";
+  path = (slash ( (pchar - ("?" | "#")) + ( slash (pchar - ("?" | "#"))* )* )? ) >mark %save_path;
+  drivepath = ( (slash|(alpha ":" slash)) ( (pchar - ("?" | "#")) + ( slash (pchar - ("?" | "#"))* )* )? ) >mark %save_path;
+  scheme = (alpha ( alpha | digit | "+" | "-" | "." )*);
 
-    # many clients don't encode these, e.g. curl, wget, ...
-    delims      = "<" | ">" | "%" |  "#" | '"';
-    unwise      = " " | "{" | "}" | "|" | "\\" | "^" | "[" | "]" | "`";
+  #simple ipv4 address
+  dec_octet = digit{1,3};
+  IPv4address = dec_octet "." dec_octet "." dec_octet "." dec_octet;
 
-    pchar = unreserved | pct_encoded | sub_delims | ":" | "@" | delims | unwise;
-    slash = "/" | "\\";
-    path = (slash ( (pchar - ("?" | "#")) + ( slash (pchar - ("?" | "#"))* )* )? ) >mark %save_path;
-    drivepath = ( (slash|(alpha ":" slash)) ( (pchar - ("?" | "#")) + ( slash (pchar - ("?" | "#"))* )* )? ) >mark %save_path;
-    scheme      = (alpha ( alpha | digit | "+" | "-" | "." )*);
+  IPvFuture  = "v" xdigit+ "." ( unreserved | sub_delims | ":" )+;
 
-#simple ipv4 address
-    dec_octet = digit{1,3};
-    IPv4address = dec_octet "." dec_octet "." dec_octet "." dec_octet;
+  # simple ipv6 address
+  IPv6address = (":" | xdigit)+ IPv4address?;
 
-    IPvFuture  = "v" xdigit+ "." ( unreserved | sub_delims | ":" )+;
+  IP_literal = "[" ( IPv6address | IPvFuture  ) "]";
 
-# simple ipv6 address
-    IPv6address = (":" | xdigit)+ IPv4address?;
+  reg_name = ( unreserved | pct_encoded | sub_delims )+;
 
-    IP_literal = "[" ( IPv6address | IPvFuture  ) "]";
+  userinfo    = ( unreserved | pct_encoded | sub_delims | ":" | "@" )*;
+  host        = IP_literal | IPv4address | reg_name;
+  port        = (pchar - ("/" | "?" | "#")){1,5} ;
+  authority   =  ( userinfo "@" )? (host >mark_host %save_host) ( ":" port >mark_port %save_port)?;
 
-    reg_name = ( unreserved | pct_encoded | sub_delims )+;
-
-    userinfo    = ( unreserved | pct_encoded | sub_delims | ":" | "@" )*;
-    host        = IP_literal | IPv4address | reg_name;
-    port        = (pchar - ("/" | "?" | "#")){1,5} ;
-    authority   =  ( userinfo "@" )? (host >mark_host %save_host) ( ":" port >mark_port %save_port)?;
-
-    fragment = ( pchar | "/" | "?" )* >mark %save_fragment;
-    query = (pchar - "#")* >mark %save_query;
+  fragment = ( pchar | "/" | "?" )* >mark %save_fragment;
+  query = (pchar - "#")* >mark %save_query;
 
   full_ref = drivepath ( "?" query )? ( "#" fragment )?;
-    relative_ref = path ( "?" query )? ( "#" fragment )?;
+  relative_ref = path ( "?" query )? ( "#" fragment )?;
   absolute_hier_part = ("//")? authority? full_ref?;
   hier_part = ("//")? authority? relative_ref?;
 
-    absolute_URI = ((scheme  ":") >mark %save_scheme)? absolute_hier_part;
+  absolute_URI = ((scheme  ":") >mark %save_scheme)? absolute_hier_part;
   URI = absolute_URI | relative_ref;
-    main := URI;
+  main := URI;
 
+  write data;
+}%%
 
-    write data;
-    }%%
-
-public static class  Url{
+  public static class Url {
+    public String value = null;
     public String protocol = null;
     public String host = null;
     public String port = null;
     public String path = null;
     public String query = null;
     public String fragment = null;
-}
-   public static Url parse(String url){
-        int mark = 0;
-        int host_mark =0;
-        int port_mark =0;
-        Url u = new Url();
-        char[] data = url.toCharArray();
-        int cs = url_parser_en_main;
-        int p = 0;
-        int pe = data.length;
-        int eof = data.length;
-        %% write init;
-        %% write exec;
-        if (cs < url_parser_first_final  ) {
-            return null;
-        } else {
-          return u;
-        }
-   }
 
+    public Url(String value) {
+      this.value = value;
+    }
 
+    public String toString() {
+      StringBuffer sb = new StringBuffer(super.toString());
+      sb.append("[protocol=").append(protocol);
+      sb.append(", host=").append(host);
+      sb.append(", port=").append(port);
+      sb.append(", path=").append(path);
+      sb.append(", query=").append(query);
+      sb.append(", fragment=").append(fragment);
+      sb.append("]");
+      return sb.toString();
+    }
+  }
+
+  public static Url parse(String url){
+    int mark = 0;
+    int host_mark =0;
+    int port_mark =0;
+    Url u = new Url(url);
+    char[] data = url.toCharArray();
+    int cs = url_parser_en_main;
+    int p = 0;
+    int pe = data.length;
+    int eof = data.length;
+    %% write init;
+    %% write exec;
+    if (cs < url_parser_first_final  ) {
+      return null;
+    } else {
+      return u;
+    }
+  }
 
 }
