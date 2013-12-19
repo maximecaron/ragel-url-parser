@@ -1,3 +1,5 @@
+package org.caron.ragel.url;
+
 import java.util.Arrays;
 
 /**
@@ -33,12 +35,12 @@ public class URLParser {
 
   action save_port {
     if (port_mark > host_mark){
-      u.port = new String(Arrays.copyOfRange(data, port_mark,fpc ));
+      u.port = new String(Arrays.copyOfRange(data, port_mark, fpc));
     }
   }
 
   action save_scheme {
-    u.protocol = new String(Arrays.copyOfRange(data, 0,fpc-1));
+    u.protocol = new String(Arrays.copyOfRange(data, 0, fpc-1));
   }
 
   action mark_host {
@@ -51,18 +53,18 @@ public class URLParser {
 
   action save_query {
     if ( u.query == null) {
-      u.query = new String(Arrays.copyOfRange(data, mark,fpc));
+      u.query = new String(Arrays.copyOfRange(data, mark, fpc));
     }
   }
 
   action save_path {
     if (u.path == null){
-      u.path = new String(Arrays.copyOfRange(data, mark,fpc));
+      u.path = new String(Arrays.copyOfRange(data, mark, fpc));
     }
   }
 
   action save_fragment {
-    u.fragment = new String(Arrays.copyOfRange(data, mark,fpc));
+    u.fragment = new String(Arrays.copyOfRange(data, mark, fpc));
   }
 
   pct_encoded = "%" xdigit xdigit;
