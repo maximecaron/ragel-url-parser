@@ -5,8 +5,8 @@
     <groupId>org.caron</groupId>
     <artifactId>ragel.url</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>org.ragel.url</name>
-    <description>Ragel definition for URL</description>
+    <name>ragel-url-parser</name>
+    <description>URL Ragel Parser</description>
 
     <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
