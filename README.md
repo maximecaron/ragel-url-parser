@@ -41,7 +41,7 @@ Matcher m = p.matcher(INPUT); // get a matcher object
 Whereas each capturing groups would correspond to:
 
 ```
-$2  = protocol
+$2  = scheme
 $5  = username
 $7  = password
 $8  = server
