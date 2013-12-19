@@ -26,3 +26,14 @@ String url = ...;
 Url parsedUrl = urlParser.parse(url);
 System.out.println(parsedUrl);
 ```
+
+Alternative
+===========
+
+If you dont need a robust implementation, this regexp might be enough:
+
+```
+String regex = "^(([^:/?#.]+):)?(//)?(([^:/]*)?(\\:([^/]*))?\\@)?(([^/:]+)|\\[[^/\\]]+\\])?(:(\\d*))?(/[^?#]*)(\\?([^#]*))?(#(.*))?";
+Pattern p = Pattern.compile(regex);
+Matcher m = p.matcher(INPUT);
+```
