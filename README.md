@@ -40,11 +40,13 @@ Matcher m = p.matcher(INPUT); // get a matcher object
 
 Whereas each capturing groups would correspond to:
 
-* $2  = protocol
-* $5  = username
-* $7  = password
-* $8  = server
-* $11 = port
-* $12 = path
-* $14 = query
-* $16 = fragment
+```
+$2  = protocol
+$5  = username
+$7  = password
+$8  = server
+$11 = port
+$12 = path
+$14 = query
+$16 = fragment
+```
