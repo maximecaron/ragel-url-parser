@@ -14,19 +14,6 @@ import java.util.Arrays;
  * @see https://github.com/maximecaron/ragel-url-parser
  */
 public class URLParser {
-/* If you dont need a robust implementation this regexp might be enough
-   String regex = "^(([^:/?#.]+):)?(//)?(([^:/]*)?(\\:([^/]*))?\\@)?(([^/:]+)|\\[[^/\\]]+\\])?(:(\\d*))?(/[^?#]*)(\\?([^#]*))?(#(.*))?";
-   Pattern p = Pattern.compile(regex);
-   Matcher m = p.matcher(INPUT); // get a matcher object
-      protocol  = $2
-      username  = $5
-      password  = $7
-      server    = $8
-      port      = $11
-      path      = $12
-      query     = $14
-      fragment  = $16
-*/
 %%{
   machine url_parser;
 
