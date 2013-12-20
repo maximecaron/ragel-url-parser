@@ -32,19 +32,17 @@ public class UrlParserTest {
     }
 
     @Test
-    public void testParsingWithSchemeAndDrivepath() throws Exception {
-        Url url = URLParser
-                .parse("file://D:/Projects/eclipse/runtime-New_configuration/ShinyProject/custom-generation-folder/doc/Customer.html");
-        System.out.println("file->" + url);
-        assertEquals("file", url.protocol);
-        assertEquals(
-                "D:/Projects/eclipse/runtime-New_configuration/ShinyProject/custom-generation-folder/doc/Customer.html",
-                url.path);
-        // @TODO: Unsure if we should consider 'D' as the host. Verify..
-        assertEquals("D", url.host);
-        assertNull(url.port);
-        assertNull(url.query);
-        assertNull(url.fragment);
+    public void testUrlEquality() throws Exception {
+        Url url1 = URLParser.parse("http://stackoverflow.com/questions/3771081/proper-way-to-check-for-url-equality");
+        Url url2 = URLParser.parse("http://stackoverflow.com/questions/3771081/proper-way-to-check-for-url-equality");
+        assertEquals(url1, url2);
+    }
+
+    @Test
+    public void testUrlEqualityExtraSlash() throws Exception {
+        Url url1 = URLParser.parse("http://stackoverflow.com/questions/3771081/proper-way-to-check-for-url-equality");
+        Url url2 = URLParser.parse("http://stackoverflow.com/questions/3771081/proper-way-to-check-for-url-equality/");
+        Assert.assertNotEquals(url1, url2);
     }
 
     @Test
@@ -104,6 +102,7 @@ public class UrlParserTest {
 
     @Test
     public void testRfcExampleTel() throws Exception {
+        // More of a URI than a URL though..
         Url url = URLParser.parse("tel:+1-816-555-1212");
         assertEquals("tel", url.protocol);
         assertEquals("+1-816-555-1212", url.host);
@@ -120,6 +119,39 @@ public class UrlParserTest {
         assertEquals("192.0.2.16", url.host);
         assertEquals("/", url.path);
         assertEquals("80", url.port);
+        assertNull(url.query);
+        assertNull(url.fragment);
+    }
+
+    @Test
+    public void testParsingWithSchemeAndDrivepath() throws Exception {
+        // The 'file' scheme is a mess, but more of a URI than a URL:
+        // http://en.wikipedia.org/wiki/File_URI_scheme
+        Url url = URLParser
+                .parse("file:///D:/Projects/eclipse/runtime-New_configuration/ShinyProject/custom-generation-folder/doc/Customer.html");
+        assertEquals("file", url.protocol);
+        assertEquals(
+                "D:/Projects/eclipse/runtime-New_configuration/ShinyProject/custom-generation-folder/doc/Customer.html",
+                url.path);
+        // @TODO: Unsure if we should consider 'D' as the host. Verify..
+        assertEquals("D", url.host);
+        assertNull(url.port);
+        assertNull(url.query);
+        assertNull(url.fragment);
+    }
+
+    @Test
+    public void testParsingWithSchemeAndDrivepathVerticalBar() throws Exception {
+        // The 'file' scheme is a mess, but more of a URI than a URL:
+        // http://en.wikipedia.org/wiki/File_URI_scheme
+        Url url = URLParser
+                .parse("file://D|/Projects/eclipse/runtime-New_configuration/ShinyProject/custom-generation-folder/doc/Customer.html");
+        assertEquals("file", url.protocol);
+        assertEquals(
+                "D:|Projects/eclipse/runtime-New_configuration/ShinyProject/custom-generation-folder/doc/Customer.html",
+                url.path);
+        assertNull(url.host);
+        assertNull(url.port);
         assertNull(url.query);
         assertNull(url.fragment);
     }
