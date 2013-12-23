@@ -49,7 +49,7 @@ To execute the tests and verify the coverage of this grammar, you can dig into t
 mvn test
 ```
 
-To get the HTML reports, the site phase should be executed due to [this bug](http://jira.codehaus.org/browse/SUREFIRE-616)):
+To get the HTML reports, you need to get the Maven *site* phase executed (due to [this bug](http://jira.codehaus.org/browse/SUREFIRE-616)):
 ```
 mvn site
 ```
