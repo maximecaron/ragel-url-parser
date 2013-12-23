@@ -16,7 +16,7 @@ Parser Generation
 Manual
 ------
 
-To generate the URL Java parser, change directory at the location of the `URLParser.rl` file and execute the following command-line (whereas the ragel executable should be available in your environment *PATH* variable):
+To manually generate the URL Java parser, change directory at the location of the `URLParser.rl` file and execute the following command-line (whereas the ragel executable should be available in your environment *PATH* variable):
 ```
 ragel -J URLParser.rl
 ```
@@ -24,7 +24,7 @@ ragel -J URLParser.rl
 Maven
 -----
 
-You will need Maven **3.0.4** at minimum (Ragel compilation does not work on lower versions). Execute the following command-line at the project's root directory:
+To generate the URL Java parser with Maven, you will need version **3.0.4** at minimum (Ragel compilation does not work on lower versions). Execute the following command-line at the project's root directory:
 
 ```
 mvn compile
