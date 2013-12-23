@@ -1,5 +1,7 @@
 package org.caron.ragel.url;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 /**
@@ -116,6 +118,42 @@ public class URLParser {
 
     public Url(String value) {
       this.value = value;
+    }
+
+    public boolean equals(Object obj) {
+      if (obj == null) {
+        return false;
+      }
+      if (!this.getClass().isInstance(obj)) {
+        return false;
+      }
+
+      Url url1 = this;
+      Url url2 = (Url) obj;
+
+      if (url1.fragment != null && !url1.fragment.equals(url2.fragment)) {
+        return false;
+      }
+      if (url1.host != null && !url1.host.equals(url2.host)) {
+        return false;
+      }
+      if (url1.path != null && !url1.path.equals(url2.path)) {
+        return false;
+      }
+      if (url1.port != null && !url1.port.equals(url2.port)) {
+        return false;
+      }
+      if (url1.protocol != null && !url1.protocol.equals(url2.protocol)) {
+        return false;
+      }
+      if (url1.query != null && !url1.query.equals(url2.query)) {
+        return false;
+      }
+      return true;
+    }
+
+    public URL toJavaUrl() throws MalformedURLException {
+      return new URL(this.value);
     }
 
     public String toString() {
