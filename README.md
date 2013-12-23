@@ -3,8 +3,8 @@ Ragel URL Parser
 
 ## Summary
 
-This project contains a Ragel language file that provides a robust URL Java parser.
- 
+This project contains a Ragel language file that provides a robust [URL](https://dvcs.w3.org/hg/url/raw-file/tip/Overview.html#writing) Java parser (or at least, it aims to be!).
+
 Requirements
 ============
 
@@ -44,13 +44,13 @@ System.out.println(parsedUrl);
 Tests
 =====
 
-To execute the tests and verify the coverage of this grammar, you can dig into the `UrlParserTest` class and execute it with Maven:
-
+To execute the tests and verify the coverage of this grammar, you can dig into the `UrlParserTest` class and execute it with Maven. To get the XML reports:
 ```
-# To get the XML report
 mvn test
+```
 
-# To get the HTML report, the site phase should be executed due to [this bug](http://jira.codehaus.org/browse/SUREFIRE-616))
+To get the HTML reports, the site phase should be executed due to [this bug](http://jira.codehaus.org/browse/SUREFIRE-616)):
+```
 mvn site
 ```
 
