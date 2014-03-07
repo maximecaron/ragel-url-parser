@@ -4,6 +4,7 @@ Ragel URL Parser
 ## Summary
 
 This project contains a Ragel language file that provides a robust [URL](https://dvcs.w3.org/hg/url/raw-file/tip/Overview.html#writing) Java parser (or at least, it aims to be!).
+See: http://tools.ietf.org/html/rfc3987
 
 Requirements
 ============
